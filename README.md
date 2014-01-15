@@ -26,3 +26,5 @@ PennBook supports the following features:
 -friend adding/removing
 
 See folder entitled "screenshots" for design
+
+Python files (putback.py and parse.py) were created to scrape data from simpleDB database for input to MapReduce functions
