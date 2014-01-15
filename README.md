@@ -2,17 +2,10 @@ PennBook
 
 PennBook is a Facebook clone built as a final project for our class. Built with a partner, the main components include:
 
-Node/Express backend:
-app.js
-routes.js
-simpleDB.js 
-
+Node/Express backend: app.js, routes.js, simpleDB.js 
 
 Front End - JS (Jquery) 
-profile.ejs
-homepage.ejs
-signup.ejs
-main.ejs
+profile.ejs, homepage.ejs, signup.ejs, main.ejs
 
 MapReduce Functionality to determine friend suggestions based on adsorption algorithm
 (See finalMapReduce)
