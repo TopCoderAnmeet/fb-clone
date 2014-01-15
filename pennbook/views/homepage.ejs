@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title> Profile </title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.css">
+<link rel="stylesheet" href="http://localhost:8080/css/bootstrap.css">
+
+<style type="text/css">
+.wall-post {
+	padding: 4px;
+	margin: 4px;
+	border: 1px solid black;
+	}
+
+#nav {
+	display: none;
+	margin-top: 0px;
+	width: 100%;
+	border: 1px solid black;
+}
+#nav li {
+	display: inline-block;
+}
+
+#wall {	
+	margin-left: 18%;
+	float:left;
+}
+
+.hide {
+	display: none;
+}
+
+.header {
+	display: none;
+	padding: 5px;
+	margin: 10px;
+	width: 60%;
+	border: 1px solid black;
+	float: right;
+}
+
+#postMessage {
+	margin-top: 50px;
+
+}
+
+
+#delete {
+	display: none;
+}
+
+.comments {
+	padding-left: 15px;
+	background-color: lightgray;
+}
+
+.all_comm {
+	background-color: lightgray;
+}
+
+.search-stuff {
+	position: absolute;
+	margin-top: 47px;
+	margin-left: 407px;
+}
+
+.results {
+ 	width: 160px;
+  	padding: 4px;
+  	margin-top: 0px;
+  	border: 1px solid black;
+  	background-color: #ffffff;
+}
+
+.results:hover {
+  	background-color: #dddddd;	
+}
+
+#right-column {
+float: right;
+height: 800px;
+border-left: 1px solid black;
+margin-bottom: 1px solid black;
+}
+
+#test {
+	border: 1px solid black;
+	margin-top: 50px;
+	margin-right: 10%;
+	width: 200px;
+}
+
+#sugg {
+	border: 1px solid black;
+	width: 200px;
+}
+
+#visual {
+	display: none;
+	border: 1px solid black;
+	margin-left: 500px;
+	margin-top:550px;
+	width: 200px;
+	height:250px;
+}
+</style>
+
+<script type="text/javascript">
+
+var getDate = function(input){
+	var date = new Date(0); // The 0 there is the key, which sets the date to the epoch
+	date.setUTCSeconds(parseInt(input));
+	var dayNumber = date.getDay();
+	if(dayNumber == 0) {
+		var day = "Sunday";
+	} else if(dayNumber == 1) {
+		var day = "Monday";
+	}else if(dayNumber == 2) {
+		var day = "Tuesday";
+	}else if(dayNumber == 3) {
+		var day = "Wednesday";
+	}else if(dayNumber == 4) {
+		var day = "Thursday";
+	}else if(dayNumber == 5) {
+		var day = "Friday";
+	}else if(dayNumber == 6) {
+		var day = "Saturday";
+	}
+
+	var monthNum = date.getMonth();
+
+	if(monthNum == 0) {
+		var month = "January";
+	} else if(monthNum == 1) {
+		var month = "February";
+	}else if(monthNum == 2) {
+		var month = "March";
+	}else if(monthNum == 3) {
+		var month = "April";
+	}else if(monthNum == 4) {
+		var month = "May";
+	}else if(monthNum == 5) {
+		var month = "June";
+	}else if(monthNum == 6) {
+		var month = "July";
+	}else if(monthNum == 7) {
+		var month = "August";
+	}else if(monthNum == 8) {
+		var month = "September";
+	}else if(monthNum == 9) {
+		var month = "October";
+	}else if(monthNum == 10) {
+		var month = "November";
+	}else if(monthNum == 11) {
+		var month = "December";
+	}
+
+
+	return (day + ", " + month + " " + date.getDate() + ", " + date.getFullYear());
+}
+
+ <!-- 
+    function updateSugg() {
+      var term = document.getElementById('abc').value;
+      $.getJSON('/suggest/'+escape(term), function(elements) {
+      	if (elements.elements != undefined) {
+       		var htmlOut = "";
+        	for (var i=0; i<elements.elements.length; i++) {
+        		var id = elements.elements[i].split(',')[0];
+        		var fn = elements.elements[i].split(',')[1];
+        		var ln = elements.elements[i].split(',')[2];
+          		htmlOut += "<a href='/profile/" + id + "'><div class='results'>" +fn + ' ' + ln +"</div></a>\n";
+        	}
+       		$("#xyz").html(htmlOut);
+       } else {
+       		$("#xyz").html("");
+       }
+      });
+    } // -->
+
+
+var getProfileId = function() {
+	var url = String(window.location);
+	var split = url.split("/");
+	var id = split[4];
+	return id;
+};
+
+
+var load_newsfeed = function(id) {
+	var get_comments = function (id, callback){ 
+		var commentList = [];
+		$.getJSON('/loadcomments/' + id, function(comments){
+			for (var j= 0; j<comments.length; j++){
+				commentList.push(comments[j]);
+				$("#"+id).append('<div class="all_comm"><p class="comments">' + '<a href="/profile/' + comments[j].creator +' ">' + comments[j].creator + "</a>: "+ comments[j].content + "</p> " +
+						"<p class='comments' style='font-style:italic'>" + getDate(comments[j].timeStamp) + "</p></div>" );
+			}
+		callback(id, commentList);
+		});
+	}
+	
+	$.getJSON('/loadhome/' + id, function(elements){
+		var html = "";
+		for(var i=0; i<elements.length; i++) {
+			//if it's a normal post:
+			if(elements[i].comment_tag != undefined) { // changed href below from 127 to just /stuff
+					comment_tag = elements[i].comment_tag;
+					html += "<div class= \' wall-post \' >"
+								+ "<div class = \' tofrom \'>"
+									+ "On " + getDate(elements[i].timeStamp) + ", <a href=\'/profile/" + 
+									elements[i].creator+ "\'>" + elements[i].creator + "</a>" +
+							" wrote: </div>" +
+								'<div id="' + elements[i].comment_tag + '" >' + elements[i].content + "<br />Comments: </div>"
+							+ "</div>";
+					get_comments(elements[i].comment_tag, function(id, commentList) {});
+				
+					html += '<form id = "' + elements[i].comment_tag + '">'+ 
+					"<input class=\"content\" type=\'text\' name=\"comment\" placeholder=\"Leave a comment\" >" +
+					'<input class="hide" type="text" name="comment_tag" value = "' +comment_tag + '">' +
+					'<button class="postcomment" id="' + comment_tag + '"> Post Comment </button>' +
+					'</form>';
+				
+					$("#posts").html(html);
+				
+					$(".postcomment").on('click', function(e) {
+						e.preventDefault();
+						var content = $(this).parent().find(".content").val();
+						var tag = $(this).parent().find(".hide").val();
+						$.post("/postcomment", {
+							content: content,
+							tag: tag,
+						}, function(data, status) {
+							//check for empty strings
+							if(document.getElementById(comment_tag).value === "") {
+									alert("No Post");				
+								}else if(data === "error") {
+								alert('Uh Oh, looks like something went wrong.');
+								} else {
+									document.getElementById("content").value = "";
+									load_newsfeed(target);
+								}
+							}
+						);	
+					});
+				} else {
+					html += "<div class= \' wall-post \' >"
+									+ "At " + elements[i].timeStamp + ", " +
+									 '<a href= "profile/' + elements[i].f1 + '">' + elements[i].f1 + "</a>" + " became friends with " +'<a 	href=" profile/' + elements[i].f2+ '">' + elements[i].f2 + "</a> </div>";
+					$("#posts").html(html);
+			}
+		<!--closes the for loop --!>
+		}
+
+	});
+};
+
+$.get('/gethome', function(e) {
+	res.redirect(e);
+})
+
+// getting redirect loop
+$.get('/getprofile2/', function(e) {
+	res.redirect(e);
+})
+
+window.onload = function() {
+	$('.header').fadeIn(1000);
+	$('#nav').fadeIn(1000);
+	
+	target = getProfileId();
+	load_newsfeed(target);
+
+	$.get("/getonline", function(e) {
+		var html = "Who's Online?";
+		for (var i = 0; i < e.length; i++) {
+			html += "<li><a href = '/profile/" + e[i].Name + "'> " + e[i].Attributes[0].Value + " " + e[i].Attributes[1].Value + "</a></li>";
+		}
+
+		$('#onlineList').append(html);
+
+	})
+
+	$.getJSON("/getsuggestions/", function(e) {
+		console.log(e);
+		console.log(e.length);
+		html = ""
+		for (var i = 0; i < e.length; i++) {
+			html += "<li><a href = '/profile/" + e[i] + "'>" + e[i] + "</a></li>"
+			console.log(html);
+		}
+
+		$('#suggList').append(html);
+
+	})
+		
+	$('form').bind("keypress", function(e) {
+		  if (e.keyCode == 13) {               
+		    e.preventDefault();
+		    return false;
+		  }
+		});
+	
+	$("#submit").click(function(e) {
+		e.preventDefault();
+		$.post("/sendmessage", {
+			content: document.getElementById("content").value,
+			target: target,
+			pvt: "0"
+		}, function(data, status) {
+			//check for empty strings
+			if(document.getElementById("content").value === "") {
+					alert("No Post");				
+				}else if(data === "error") {
+				alert('Uh Oh, looks like something went wrong.');
+				} else {
+					document.getElementById("content").value = "";
+					load_newsfeed(target);
+				}
+			}
+		);
+	});
+}
+
+
+
+</script>
+
+</head>
+
+
+
+<body>
+
+	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">PennBook</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active newsfeed"><a href="/gethome/">Home</a></li>
+            <li><a href="/getprofile2/">My Profile</a></li>
+            <li><a href="/logout/">Logout</a></li>
+            <li><div class="container" style="width:130px">
+    			<form action="" method="" onSubmit="return false">
+      			<input type="text" name="thetext" style="margin-top:13px" id="abc" onKeyUp="updateSugg()"><br>
+    			</form>
+			</div></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+    <div class="search-stuff" id="xyz"></div>
+
+  <div id="right-column">
+	  <div class="#test" id="test">
+	  	<ul id="onlineList">
+	  	</ul>
+	  </div>
+	  <div id="sugg"> <h3> People You May Know </h3> 
+		<ul id="suggList">
+	  	</ul>
+	  </div>
+</div>
+
+
+  <div id="wall">
+  	<div id="postMessage">
+  	<form>
+		<input type="text" class="input-border-radius" name="content" placeholder="Say Something!" id="content">
+	</form>
+  	<button id="submit" type="submit"> Post </button>
+  	</div>
+  	<div id="posts">
+  	</div>
+  </div>
+
+
+
+</body>
+</html>
+
