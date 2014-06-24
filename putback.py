@@ -1,5 +1,5 @@
 import boto
-sdb = boto.connect_sdb('AKIAICX6PH7J362DCMCA', '0VmWENUfO2Z/CwB9l0hCyhBrFcPw6iIneHS+SEnF')
+sdb = boto.connect_sdb('xxx', 'zzz')
 recs = sdb.get_domain('recommendations')
 
 f = open('test.txt', 'r')
